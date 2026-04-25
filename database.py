@@ -1,5 +1,5 @@
 import sqlite3
-from utils import DB_NAME
+from utils import DB_NAME, get_today_str
 
 
 class DatabaseManager:
@@ -58,6 +58,29 @@ class DatabaseManager:
         cursor = self.conn.cursor()
         cursor.execute("DELETE FROM decks WHERE id = ?", (deck_id,))
         self.conn.commit()
+
+    def add_card(self, deck_id, question, answer, next_date):
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            INSERT INTO cards (deck_id, question, answer, next_review_date)
+            VALUES (?, ?, ?, ?)""", (deck_id, question, answer, next_date))
+        self.conn.commit()
+
+    def get_due_cards(self, deck_id):
+        """
+        Возвращает карточки к повторению
+        :param deck_id:
+        :return:
+        """
+
+        cursor = self.conn.cursor()
+        today = get_today_str()
+        cursor.execute("""
+            SELECT id, question, answer, next_review_date
+            FROM cards
+            WHERE deck_id = ? AND next_review_date <= ?""",
+                       (deck_id, today))
+        return cursor.fetchall()
 
     def close(self):
         self.conn.close()
