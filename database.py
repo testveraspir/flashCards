@@ -1,4 +1,6 @@
 import sqlite3
+import datetime
+
 from utils import DB_NAME, get_today_str
 
 
@@ -81,6 +83,48 @@ class DatabaseManager:
             WHERE deck_id = ? AND next_review_date <= ?""",
                        (deck_id, today))
         return cursor.fetchall()
+
+    def get_card_history(self, card_id):
+        """
+        Возвращает последние 4 даты повторения для карточки
+        :param card_id:
+        :return:
+        """
+
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            SELECT review_date FROM review_history
+            WHERE card_id = ?
+            ORDER BY review_date DESC LIMIT 4
+        """, (card_id,))
+        return [row[0] for row in cursor.fetchall()]
+
+    def update_review(self, card_id, interval_days):
+        cursor = self.conn.cursor()
+        today = datetime.date.today()
+        # Вычисляем дату следующего повторения
+        if interval_days == 0:
+            next_date = today
+        else:
+            next_date = today + datetime.timedelta(days=interval_days)
+
+        next_date_str = next_date.isoformat()
+        review_date_str = today.isoformat()
+        # Обновляем карточку
+        cursor.execute("""
+            UPDATE cards SET next_review_date = ?
+            WHERE id = ?
+        """, (next_date_str, card_id)
+        )
+        # Записываем в историю
+        cursor.execute("""
+            INSERT INTO review_history (card_id, review_date)
+            VALUES (?, ?)
+        """, (card_id, review_date_str))
+
+
+
+
 
     def close(self):
         self.conn.close()
