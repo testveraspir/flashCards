@@ -40,5 +40,24 @@ class DatabaseManager:
         ''')
         self.conn.commit()
 
+    def add_deck(self, name):
+        cursor = self.conn.cursor()
+        try:
+            cursor.execute("INSERT INTO decks (name) VALUES (?)", (name,))
+            self.conn.commit()
+            return True
+        except sqlite3.IntegrityError:
+            return False  # Колода с таким именем уже существует
+
+    def get_decks(self):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT id, name FROM decks")
+        return cursor.fetchall()
+
+    def delete_deck(self, deck_id):
+        cursor = self.conn.cursor()
+        cursor.execute("DELETE FROM decks WHERE id = ?", (deck_id,))
+        self.conn.commit()
+
     def close(self):
         self.conn.close()
