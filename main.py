@@ -315,8 +315,15 @@ class FlashcardsApp:
         self.answer_container.pack(fill=tk.BOTH, expand=True, pady=10)
 
     def rate_card(self, interval):
-        """Оценивает карточку и переходит к следующей"""
-        print(f"rate_card вызван с интервалом {interval} (заглушка)")
+        """Обрабатывает выбор интервала повторения"""
+        # Сохраняем результат повторения в БД
+        self.db.update_review(self.current_card_id, interval)
+
+        # Удаляем текущую карточку из очереди
+        self.cards_queue.pop(0)
+
+        # Показываем следующую карточку (если есть)
+        self.show_next_card()
 
     def show_next_card(self):
         """Отображает следующую карточку из очереди"""
