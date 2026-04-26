@@ -40,6 +40,7 @@ class DeckMenuView:
             side=tk.LEFT)
         ttk.Button(header_frame,
                    text="Назад",
+                   bootstyle=PRIMARY + OUTLINE,
                    command=self.on_back,
                    ).pack(side=tk.RIGHT)
 

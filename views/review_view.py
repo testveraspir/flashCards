@@ -1,5 +1,7 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
+from tkinter import messagebox
 
 
 class ReviewView:
@@ -41,6 +43,7 @@ class ReviewView:
         top_frame.pack(fill=tk.X, pady=5)
         ttk.Button(top_frame,
                    text="Прервать",
+                   bootstyle=PRIMARY + OUTLINE,
                    command=self.interrupt
                    ).pack(side=tk.RIGHT)
 
@@ -72,6 +75,7 @@ class ReviewView:
         # Кнопка "Показать ответ"
         self.btn_flip = ttk.Button(self.card_frame,
                                    text="Показать ответ",
+                                   bootstyle=PRIMARY + OUTLINE,
                                    command=self.flip_card)
         self.btn_flip.pack(pady=20)
 
@@ -96,18 +100,18 @@ class ReviewView:
         btn_grid = ttk.Frame(self.answer_container)
         btn_grid.pack()
 
-        ttk.Button(btn_grid, text="Сегодня",
+        ttk.Button(btn_grid, text="Сегодня", bootstyle=PRIMARY+OUTLINE,
                    command=lambda: self.rate_card(0)
-                   ).grid(row=0, column=0, padx=5, pady=5)
-        ttk.Button(btn_grid, text="Через 1 день",
+                   ).grid(row=0, column=0, padx=5, pady=5, sticky="ew")
+        ttk.Button(btn_grid, text="Через 1 день", bootstyle=PRIMARY+OUTLINE,
                    command=lambda: self.rate_card(1)
-                   ).grid(row=0, column=1, padx=5, pady=5)
-        ttk.Button(btn_grid, text="Через 3 дня",
+                   ).grid(row=0, column=1, padx=5, pady=5, sticky="ew")
+        ttk.Button(btn_grid, text="Через 3 дня", bootstyle=PRIMARY+OUTLINE,
                    command=lambda: self.rate_card(3)
-                   ).grid(row=1, column=0, padx=5, pady=5)
-        ttk.Button(btn_grid, text="Через 7 дней",
+                   ).grid(row=1, column=0, padx=5, pady=5, sticky="ew")
+        ttk.Button(btn_grid, text="Через 7 дней", bootstyle=PRIMARY+OUTLINE,
                    command=lambda: self.rate_card(7)
-                   ).grid(row=1, column=1, padx=5, pady=5)
+                   ).grid(row=1, column=1, padx=5, pady=5, sticky="ew")
 
         # Прогресс
         self.progress_label = ttk.Label(self.parent, text="")
