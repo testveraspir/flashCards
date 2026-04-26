@@ -19,6 +19,14 @@ class FlashcardsApp:
         self.current_deck_name = None
         self.q_text = None
         self.a_text = None
+        self.cards_queue = []
+        self.card_frame = None
+        self.progress_label = None
+        self.answer_label = None
+        self.answer_container = None
+        self.btn_flip = None
+        self.question_label = None
+        self.history_label = None
 
         # Основной контейнер
         self.main_container = ttk.Frame(root, padding="10")
@@ -108,7 +116,8 @@ class FlashcardsApp:
         deck_id = self.deck_ids[index]
         deck_name = self.deck_listbox.get(index)
         if messagebox.askyesno("Подтверждение",
-                               f'Удалить колоду "{deck_name}"?\nВсе карточки будут потеряны.'):
+                               f'Удалить колоду "{deck_name}"?'
+                               f'\nВсе карточки будут потеряны.'):
             self.db.delete_deck(deck_id)
             self.refresh_deck_list()
             messagebox.showinfo("Успех", "Колода удалена")
@@ -190,14 +199,15 @@ class FlashcardsApp:
 
     def start_review_session(self):
         """Начинает сессию повторения"""
-        from utils import get_today_str
         due_cards = self.db.get_due_cards(self.current_deck_id)
 
         if not due_cards:
             messagebox.showinfo("Информация", "На сегодня все карточки изучены!")
             return
 
-        # Пока временно: показать количество карточек
+        self.cards_queue = list(due_cards)
+        self.clear_frame()
+        self.setup_review_ui()
         messagebox.showinfo("Инфо",
                             f"Надо повторить {len(due_cards)} карточек."
                             f"\n(Здесь будет интерфейс повторения)")
@@ -218,6 +228,96 @@ class FlashcardsApp:
             else:
                 messagebox.showerror("Ошибка",
                                      "Колода с таким названием уже существует")
+
+    def setup_review_ui(self):
+        """Создаёт интерфейс для режима повторения"""
+        # Верхняя панель (кнопка "Прервать")
+        top_frame = ttk.Frame(self.main_container)
+        top_frame.pack(fill=tk.X, pady=5)
+        ttk.Button(top_frame,
+                   text="Прервать",
+                   command=self.show_deck_list
+                   ).pack(side=tk.LEFT)
+
+        # Основная область карточки
+        self.card_frame = ttk.Frame(self.main_container,
+                                    borderwidth=2,
+                                    relief="groove",
+                                    padding=20)
+        self.card_frame.pack(fill=tk.BOTH,
+                             expand=True, padx=20, pady=10)
+
+        # История повторений
+        self.history_label = ttk.Label(self.card_frame,
+                                       text="",
+                                       foreground="gray",
+                                       font=("Helvetica", 9))
+        self.history_label.pack(anchor="w", pady=(0, 10))
+
+        # Вопрос
+        ttk.Label(self.card_frame, text="Вопрос:",
+                  font=("Helvetica", 10, "bold")
+                  ).pack(anchor="w")
+        self.question_label = ttk.Label(self.card_frame,
+                                        text="",
+                                        wraplength=500,
+                                        font=("Helvetica", 12))
+        self.question_label.pack(anchor="w", pady=5)
+
+        # Кнопка "Показать ответ"
+        self.btn_flip = ttk.Button(self.card_frame,
+                                   text="Показать ответ",
+                                   command=self.flip_card)
+        self.btn_flip.pack(pady=20)
+
+        # Контейнер для ответа и кнопок (изначально скрыт)
+        self.answer_container = ttk.Frame(self.card_frame)
+
+        ttk.Label(self.answer_container,
+                  text="Ответ:",
+                  font=("Helvetica", 10, "bold")
+                  ).pack(anchor="w")
+        self.answer_label = ttk.Label(self.answer_container,
+                                      text="",
+                                      wraplength=500,
+                                      font=("Helvetica", 12))
+        self.answer_label.pack(anchor="w", pady=5)
+
+        ttk.Separator(self.answer_container,
+                      orient='horizontal'
+                      ).pack(fill='x', pady=15)
+
+        # Кнопки выбора интервала
+        btn_grid = ttk.Frame(self.answer_container)
+        btn_grid.pack()
+
+        ttk.Button(btn_grid, text="Сегодня (0 дн)",
+                   command=lambda: self.rate_card(0)
+                   ).grid(row=0, column=0, padx=5, pady=5)
+        ttk.Button(btn_grid, text="Через 1 день",
+                   command=lambda: self.rate_card(1)
+                   ).grid(row=0, column=1, padx=5, pady=5)
+        ttk.Button(btn_grid, text="Через 3 дня",
+                   command=lambda: self.rate_card(3)
+                   ).grid(row=1, column=0, padx=5, pady=5)
+        ttk.Button(btn_grid, text="Через 7 дней",
+                   command=lambda: self.rate_card(7)
+                   ).grid(row=1, column=1, padx=5, pady=5)
+
+        # Прогресс
+        self.progress_label = ttk.Label(self.main_container, text="")
+        self.progress_label.pack(pady=5)
+
+    def flip_card(self):
+        """Переворачивает карточку (показывает ответ)"""
+        # отключаем кнопку "Показать ответ"
+        self.btn_flip.config(state="disabled")
+        # показываем контейнер с ответом и кнопками
+        self.answer_container.pack(fill=tk.BOTH, expand=True, pady=10)
+
+    def rate_card(self, interval):
+        """Оценивает карточку и переходит к следующей"""
+        print(f"rate_card вызван с интервалом {interval} (заглушка)")
 
 
 if __name__ == "__main__":
