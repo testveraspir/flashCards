@@ -172,7 +172,7 @@ class ReviewView:
     def flip_card(self):
         """Переворачивает карточку (показывает ответ)"""
         # отключаем кнопку "Показать ответ"
-        self.btn_flip.config(state="disabled")
+        self.btn_flip.pack_forget()
         # показываем контейнер с ответом и кнопками
         self.answer_container.pack(fill=tk.BOTH, expand=True, pady=10)
 
