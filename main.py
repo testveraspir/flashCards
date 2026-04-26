@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, messagebox, simpledialog
+from tkinter import ttk, messagebox, simpledialog, scrolledtext
 from database import DatabaseManager
 
 
@@ -17,6 +17,8 @@ class FlashcardsApp:
         self.deck_listbox = None
         self.deck_ids = []
         self.current_deck_name = None
+        self.q_text = None
+        self.a_text = None
 
         # Основной контейнер
         self.main_container = ttk.Frame(root, padding="10")
@@ -153,8 +155,19 @@ class FlashcardsApp:
                    ).pack(pady=5)
 
     def add_card_dialog(self):
-        """Временная заглушка для добавления карточки"""
-        messagebox.showinfo("В разработке", "Окно добавления карточки будет здесь")
+        dialog = tk.Toplevel(self.root)
+        dialog.title("Новая карточка")
+        dialog.geometry("500x400")
+
+        # Метка и поле для Вопроса
+        ttk.Label(dialog, text="Вопрос:").pack(anchor="w", padx=10, pady=(10, 0))
+        self.q_text = scrolledtext.ScrolledText(dialog, width=50, height=8)
+        self.q_text.pack(padx=10, pady=5, fill=tk.BOTH, expand=True)
+
+        # Метка и поле для Ответа
+        ttk.Label(dialog, text="Ответ:").pack(anchor="w", padx=10)
+        self.a_text = scrolledtext.ScrolledText(dialog, width=50, height=8)
+        self.a_text.pack(padx=10, pady=5, fill=tk.BOTH, expand=True)
 
     def start_review_session(self):
         """Временная заглушка для начала повторения"""
