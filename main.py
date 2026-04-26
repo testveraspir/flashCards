@@ -189,8 +189,18 @@ class FlashcardsApp:
         ttk.Button(dialog, text="Сохранить", command=save_card).pack(pady=10)
 
     def start_review_session(self):
-        """Временная заглушка для начала повторения"""
-        messagebox.showinfo("В разработке", "Режим повторения будет здесь")
+        """Начинает сессию повторения"""
+        from utils import get_today_str
+        due_cards = self.db.get_due_cards(self.current_deck_id)
+
+        if not due_cards:
+            messagebox.showinfo("Информация", "На сегодня все карточки изучены!")
+            return
+
+        # Пока временно: показать количество карточек
+        messagebox.showinfo("Инфо",
+                            f"Надо повторить {len(due_cards)} карточек."
+                            f"\n(Здесь будет интерфейс повторения)")
 
     def create_deck_dialog(self):
         """Открывает диалог создания новой колоды"""
