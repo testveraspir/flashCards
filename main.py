@@ -75,6 +75,8 @@ class FlashcardsApp:
                    text="Выход",
                    command=self.on_closing
                    ).pack(fill=tk.X, pady=2)
+        # Загружаем список колод
+        self.refresh_deck_list()
 
     def refresh_deck_list(self):
         """Обновляет список колод из базы данных"""
