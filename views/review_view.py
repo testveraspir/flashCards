@@ -167,7 +167,7 @@ class ReviewView:
 
         # Сбрасываем состояние: скрываем контейнер с ответом, активируем кнопку переворота
         self.answer_container.pack_forget()
-        self.btn_flip.config(state="normal")
+        self.btn_flip.pack()
 
     def flip_card(self):
         """Переворачивает карточку (показывает ответ)"""
