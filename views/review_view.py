@@ -119,7 +119,15 @@ class ReviewView:
 
     def start_session(self):
         """Начинает сессию повторения"""
+        # Проверяем, есть ли вообще карточки в колоде
+        all_cards = self.db.get_all_cards_count(self.deck_id)
         self.cards_queue = self.db.get_due_cards(self.deck_id)
+
+        if all_cards == 0:
+            messagebox.showinfo("Информация",
+                                "В этой колоде ещё нет карточек."
+                                "\nДобавьте карточки через меню колоды.")
+            return
 
         if not self.cards_queue:
             messagebox.showinfo("Информация",

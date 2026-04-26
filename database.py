@@ -122,9 +122,11 @@ class DatabaseManager:
             VALUES (?, ?)
         """, (card_id, review_date_str))
 
-
-
-
+    def get_all_cards_count(self, deck_id):
+        """Возвращает общее количество карточек в колоде"""
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM cards WHERE deck_id = ?", (deck_id,))
+        return cursor.fetchone()[0]
 
     def close(self):
         self.conn.close()
