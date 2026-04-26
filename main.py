@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog, scrolledtext
 from database import DatabaseManager
+from views.deck_list_view import DeckListView
 
 
 class FlashcardsApp:
@@ -13,12 +14,6 @@ class FlashcardsApp:
         # Создаем объект DatabaseManager
         self.db = DatabaseManager()
         # Для хранения, выбранной колоды
-        self.current_deck_id = None
-        self.deck_listbox = None
-        self.deck_ids = []
-        self.current_deck_name = None
-        self.q_text = None
-        self.a_text = None
         self.cards_queue = []
         self.card_frame = None
         self.progress_label = None
@@ -28,6 +23,9 @@ class FlashcardsApp:
         self.question_label = None
         self.history_label = None
         self.current_card_id = None
+        self.deck_list_view = None
+        self.current_deck_name = None
+        self.current_deck_id = None
 
         # Основной контейнер
         self.main_container = ttk.Frame(root, padding="10")
@@ -51,87 +49,22 @@ class FlashcardsApp:
             widget.destroy()
 
     def show_deck_list(self):
-        """Отображает список колод (только заголовок и пустой список)"""
-        # Очищает контейнер
+        """Отображает экран списка колод"""
         self.clear_frame()
-        # Заголовок
-        ttk.Label(self.main_container,
-                  text="Мои колоды",
-                  font=("Helvetica", 14, "bold")
-                  ).pack(pady=10)
-        # Рамка для списка
-        list_frame = ttk.Frame(self.main_container)
-        list_frame.pack(fill=tk.BOTH,
-                        expand=True,
-                        pady=5)
-        # Список колод
-        self.deck_listbox = tk.Listbox(list_frame,
-                                       font=("Helvetica", 12))
-        scrollbar = ttk.Scrollbar(list_frame,
-                                  orient="vertical",
-                                  command=self.deck_listbox.yview)
-        self.deck_listbox.configure(yscrollcommand=scrollbar.set)
+        # Создаём экран, передаём callback для выбора колоды
+        self.deck_list_view = DeckListView(
+            self.main_container,
+            self.db,
+            self.on_deck_selected
+        )
 
-        self.deck_listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-
-        # Кнопки
-        btn_frame = ttk.Frame(self.main_container)
-        btn_frame.pack(pady=10, fill=tk.X)
-
-        ttk.Button(btn_frame,
-                   text="Создать колоду",
-                   command=self.create_deck_dialog
-                   ).pack(fill=tk.X, pady=2)
-        ttk.Button(btn_frame,
-                   text="Выбрать колоду",
-                   command=self.select_deck
-                   ).pack(fill=tk.X, pady=2)
-        ttk.Button(btn_frame,
-                   text="Удалить колоду",
-                   command=self.delete_deck
-                   ).pack(fill=tk.X, pady=2)
-        ttk.Button(btn_frame,
-                   text="Выход",
-                   command=self.on_closing
-                   ).pack(fill=tk.X, pady=2)
-        # Загружаем список колод
-        self.refresh_deck_list()
-
-    def refresh_deck_list(self):
-        """Обновляет список колод из базы данных"""
-        self.deck_listbox.delete(0, tk.END)
-        decks = self.db.get_decks()
-        for deck_id, name in decks:
-            self.deck_listbox.insert(tk.END, name)
-        # Сохраним id колод, чтобы потом по имени найти id
-        self.deck_ids = [deck_id for deck_id, name in decks]
-
-    def delete_deck(self):
-        """Удаляет выбранную колоду"""
-        selection = self.deck_listbox.curselection()
-        if not selection:
-            messagebox.showwarning("Внимание", "Выберите колоду для удаления")
-            return
-        index = selection[0]
-        deck_id = self.deck_ids[index]
-        deck_name = self.deck_listbox.get(index)
-        if messagebox.askyesno("Подтверждение",
-                               f'Удалить колоду "{deck_name}"?'
-                               f'\nВсе карточки будут потеряны.'):
-            self.db.delete_deck(deck_id)
-            self.refresh_deck_list()
-            messagebox.showinfo("Успех", "Колода удалена")
-
-    def select_deck(self):
-        selection = self.deck_listbox.curselection()
-        if not selection:
-            messagebox.showwarning("Внимание", "Выберите колоду из списка")
-            return
-        index = selection[0]
-        self.current_deck_id = self.deck_ids[index]
-        self.current_deck_name = self.deck_listbox.get(index)
-        self.show_deck_menu()
+    def on_deck_selected(self, deck_id, deck_name):
+        """Обработчик выбора колоды из списка"""
+        self.current_deck_id = deck_id
+        self.current_deck_name = deck_name
+        # Пока временное сообщение, позже заменим на show_deck_menu
+        messagebox.showinfo("Инфо", f'Выбрана колода "{self.current_deck_name}"')
+        # TODO: здесь будет show_deck_menu()
 
     def show_deck_menu(self):
         """Отображает меню выбранной колоды"""
@@ -180,23 +113,6 @@ class FlashcardsApp:
         self.clear_frame()
         self.setup_review_ui()
         self.show_next_card()
-
-    def create_deck_dialog(self):
-        """Открывает диалог создания новой колоды"""
-        name = simpledialog.askstring("Новая колода",
-                                      "Введите название колоды (не более 50 символов):")
-        if name:
-            if len(name) > 50:
-                messagebox.showerror("Ошибка",
-                                     "Название не должно превышать 50 символов")
-                return
-            if self.db.add_deck(name):
-                messagebox.showinfo("Успех",
-                                    "Колода создана")
-                self.refresh_deck_list()
-            else:
-                messagebox.showerror("Ошибка",
-                                     "Колода с таким названием уже существует")
 
     def setup_review_ui(self):
         """Создаёт интерфейс для режима повторения"""
