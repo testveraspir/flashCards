@@ -87,11 +87,11 @@ class DeckListView:
     def create_deck_dialog(self):
         """Диалог создания новой колоды"""
         name = simpledialog.askstring("Новая колода",
-                                      "Введите название колоды (не более 50 символов):")
+                                      "Введите название колоды (не более 30 символов):")
         if name:
-            if len(name) > 50:
+            if len(name) > 30:
                 messagebox.showerror("Ошибка",
-                                     "Название не должно превышать 50 символов")
+                                     "Название не должно превышать 30 символов")
                 return
             if self.db.add_deck(name):
                 messagebox.showinfo("Успех",

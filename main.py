@@ -11,8 +11,8 @@ class FlashcardsApp:
         # Настраиваем окно
         self.root = root
         self.root.title("Интервальное повторение")
-        self.root.geometry("600x500")
-        self.root.minsize(500, 400)
+        self.root.geometry("700x600")
+        self.root.minsize(600, 500)
 
         # Настройка стилей
         self.setup_styles()
