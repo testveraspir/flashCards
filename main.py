@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog, scrolledtext
 from database import DatabaseManager
 from views.deck_list_view import DeckListView
+from views.deck_menu_view import DeckMenuView
 
 
 class FlashcardsApp:
@@ -26,6 +27,7 @@ class FlashcardsApp:
         self.deck_list_view = None
         self.current_deck_name = None
         self.current_deck_id = None
+        self.deck_menu_view = None
 
         # Основной контейнер
         self.main_container = ttk.Frame(root, padding="10")
@@ -62,40 +64,20 @@ class FlashcardsApp:
         """Обработчик выбора колоды из списка"""
         self.current_deck_id = deck_id
         self.current_deck_name = deck_name
-        # Пока временное сообщение, позже заменим на show_deck_menu
-        messagebox.showinfo("Инфо", f'Выбрана колода "{self.current_deck_name}"')
-        # TODO: здесь будет show_deck_menu()
+        self.show_deck_menu()
 
     def show_deck_menu(self):
-        """Отображает меню выбранной колоды"""
+        """Отображает экран меню колоды"""
         self.clear_frame()
-
-        # Верхняя панель: название колоды и кнопка "Назад"
-        header_frame = ttk.Frame(self.main_container)
-        header_frame.pack(fill=tk.X, pady=5)
-        ttk.Label(header_frame,
-                  text=f"Колода: {self.current_deck_name}",
-                  font=("Helvetica", 14, "bold")).pack(
-            side=tk.LEFT)
-        ttk.Button(header_frame,
-                   text="< Назад",
-                   command=self.show_deck_list
-                   ).pack(side=tk.RIGHT)
-
-        # Центральные кнопки действий
-        actions_frame = ttk.Frame(self.main_container)
-        actions_frame.pack(pady=40)
-
-        ttk.Button(actions_frame,
-                   text="Добавить карточку",
-                   width=20,
-                   command=self.add_card_dialog
-                   ).pack(pady=5)
-        ttk.Button(actions_frame,
-                   text="Начать повторение",
-                   width=20,
-                   command=self.start_review_session
-                   ).pack(pady=5)
+        self.deck_menu_view = DeckMenuView(
+            self.main_container,
+            self.current_deck_id,
+            self.current_deck_name,
+            self.db,
+            on_back=self.show_deck_list,
+            on_add_card=self.add_card_dialog,
+            on_start_review=self.start_review_session
+        )
 
     def add_card_dialog(self):
         from dialogs.add_card_dialog import show_add_card_dialog
