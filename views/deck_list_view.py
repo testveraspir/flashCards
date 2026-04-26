@@ -61,6 +61,10 @@ class DeckListView:
                    text="Удалить колоду",
                    command=self.delete_deck
                    ).pack(fill=tk.X, pady=2)
+        ttk.Button(btn_frame,
+                   text="Выход",
+                   command=self.on_exit
+                   ).pack(fill=tk.X, pady=2)
 
     def refresh_deck_list(self):
         """Обновляет список колод из базы данных"""
@@ -113,3 +117,9 @@ class DeckListView:
         deck_id = self.deck_ids[index]
         deck_name = self.deck_listbox.get(index)
         self.on_deck_selected(deck_id, deck_name)
+
+    def on_exit(self):
+        """Выход из приложения"""
+        if messagebox.askyesno("Выход",
+                               "Вы уверены, что хотите выйти?"):
+            self.parent.winfo_toplevel().destroy()
