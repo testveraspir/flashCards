@@ -12,7 +12,7 @@ class FlashcardsApp:
         self.root = root
         self.root.title("Интервальное повторение")
         self.root.geometry("600x500")
-        self.root.minsize(400, 300)
+        self.root.minsize(500, 400)
         # Создаем объект DatabaseManager
         self.db = DatabaseManager()
 

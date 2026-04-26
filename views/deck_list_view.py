@@ -49,22 +49,26 @@ class DeckListView:
         btn_frame = ttk.Frame(self.parent)
         btn_frame.pack(pady=10, fill=tk.X)
 
+        btn_frame.columnconfigure(0, weight=1)
+        btn_frame.columnconfigure(1, weight=1)
+
         ttk.Button(btn_frame,
                    text="Создать колоду",
                    command=self.create_deck_dialog
-                   ).pack(fill=tk.X, pady=2)
-        ttk.Button(btn_frame,
-                   text="Выбрать колоду",
-                   command=self.select_deck
-                   ).pack(fill=tk.X, pady=2)
+                   ).grid(row=0, column=0, padx=2, pady=2, sticky="ew")
         ttk.Button(btn_frame,
                    text="Удалить колоду",
                    command=self.delete_deck
-                   ).pack(fill=tk.X, pady=2)
+                   ).grid(row=0, column=1, padx=2, pady=2, sticky="ew")
+
+        ttk.Button(btn_frame,
+                   text="Выбрать колоду",
+                   command=self.select_deck
+                   ).grid(row=1, column=0, padx=2, pady=2, sticky="ew")
         ttk.Button(btn_frame,
                    text="Выход",
                    command=self.on_exit
-                   ).pack(fill=tk.X, pady=2)
+                   ).grid(row=1, column=1, padx=2, pady=2, sticky="ew")
 
     def refresh_deck_list(self):
         """Обновляет список колод из базы данных"""
