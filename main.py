@@ -112,7 +112,6 @@ class FlashcardsApp:
             messagebox.showinfo("Успех", "Колода удалена")
 
     def select_deck(self):
-        """Выбирает колоду для работы и переходит в меню колоды"""
         selection = self.deck_listbox.curselection()
         if not selection:
             messagebox.showwarning("Внимание", "Выберите колоду из списка")
@@ -120,9 +119,46 @@ class FlashcardsApp:
         index = selection[0]
         self.current_deck_id = self.deck_ids[index]
         self.current_deck_name = self.deck_listbox.get(index)
-        # Пока только выводим сообщение, позже сделаем реальный переход
-        messagebox.showinfo("Инфо", f'Выбрана колода "{self.current_deck_name}"')
-        # В следующем шаге здесь откроем меню колоды
+        self.show_deck_menu()
+
+    def show_deck_menu(self):
+        """Отображает меню выбранной колоды"""
+        self.clear_frame()
+
+        # Верхняя панель: название колоды и кнопка "Назад"
+        header_frame = ttk.Frame(self.main_container)
+        header_frame.pack(fill=tk.X, pady=5)
+        ttk.Label(header_frame,
+                  text=f"Колода: {self.current_deck_name}",
+                  font=("Helvetica", 14, "bold")).pack(
+            side=tk.LEFT)
+        ttk.Button(header_frame,
+                   text="< Назад",
+                   command=self.show_deck_list
+                   ).pack(side=tk.RIGHT)
+
+        # Центральные кнопки действий
+        actions_frame = ttk.Frame(self.main_container)
+        actions_frame.pack(pady=40)
+
+        ttk.Button(actions_frame,
+                   text="Добавить карточку",
+                   width=20,
+                   command=self.add_card_dialog
+                   ).pack(pady=5)
+        ttk.Button(actions_frame,
+                   text="Начать повторение",
+                   width=20,
+                   command=self.start_review_session
+                   ).pack(pady=5)
+
+    def add_card_dialog(self):
+        """Временная заглушка для добавления карточки"""
+        messagebox.showinfo("В разработке", "Окно добавления карточки будет здесь")
+
+    def start_review_session(self):
+        """Временная заглушка для начала повторения"""
+        messagebox.showinfo("В разработке", "Режим повторения будет здесь")
 
     def create_deck_dialog(self):
         """Открывает диалог создания новой колоды"""
