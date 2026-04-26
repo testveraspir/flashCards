@@ -89,7 +89,7 @@ class ReviewView:
         self.answer_label = scrolledtext.ScrolledText(self.answer_container,
                                                       wrap=tk.WORD,
                                                       font=("Helvetica", 12),
-                                                      height=8,
+                                                      height=5,
                                                       relief=tk.FLAT)
         self.answer_label.pack(fill=tk.BOTH, expand=True, pady=5)
         self.answer_label.config(state=tk.DISABLED)  # только для чтения
