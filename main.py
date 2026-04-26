@@ -27,6 +27,7 @@ class FlashcardsApp:
         self.btn_flip = None
         self.question_label = None
         self.history_label = None
+        self.current_card_id = None
 
         # Основной контейнер
         self.main_container = ttk.Frame(root, padding="10")
@@ -208,9 +209,7 @@ class FlashcardsApp:
         self.cards_queue = list(due_cards)
         self.clear_frame()
         self.setup_review_ui()
-        messagebox.showinfo("Инфо",
-                            f"Надо повторить {len(due_cards)} карточек."
-                            f"\n(Здесь будет интерфейс повторения)")
+        self.show_next_card()
 
     def create_deck_dialog(self):
         """Открывает диалог создания новой колоды"""
@@ -318,6 +317,39 @@ class FlashcardsApp:
     def rate_card(self, interval):
         """Оценивает карточку и переходит к следующей"""
         print(f"rate_card вызван с интервалом {interval} (заглушка)")
+
+    def show_next_card(self):
+        """Отображает следующую карточку из очереди"""
+        if not self.cards_queue:
+            messagebox.showinfo("Сессия окончена",
+                                "Вы повторили все карточки на сегодня!")
+            self.show_deck_list()
+            return
+
+        # Берём первую карточку из очереди
+        card = self.cards_queue[0]
+        self.current_card_id = card[0]
+        question_text = card[1]
+        answer_text = card[2]
+
+        # Обновляем виджеты
+        self.question_label.config(text=question_text)
+        self.answer_label.config(text=answer_text)
+        self.progress_label.config(text=f"Осталось: {len(self.cards_queue)}")
+
+        # Загружаем и отображаем историю повторений
+        history = self.db.get_card_history(self.current_card_id)
+        if history:
+            from utils import format_relative_date
+            history_lines = [format_relative_date(d) for d in history]
+            history_text = "Последние повторения:\n" + "\n".join(history_lines)
+            self.history_label.config(text=history_text)
+        else:
+            self.history_label.config(text="История повторений:\n(Нет данных)")
+
+        # Сбрасываем состояние: скрываем контейнер с ответом, активируем кнопку переворота
+        self.answer_container.pack_forget()
+        self.btn_flip.config(state="normal")
 
 
 if __name__ == "__main__":
