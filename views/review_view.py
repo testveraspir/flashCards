@@ -41,8 +41,8 @@ class ReviewView:
         top_frame.pack(fill=tk.X, pady=5)
         ttk.Button(top_frame,
                    text="Прервать",
-                   command=self.interrupt()
-                   ).pack(side=tk.LEFT)
+                   command=self.interrupt
+                   ).pack(side=tk.RIGHT)
 
         # Основная область карточки
         self.card_frame = ttk.Frame(self.parent,
