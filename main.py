@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
+import ttkbootstrap as ttk
 from database import DatabaseManager
 from views.deck_list_view import DeckListView
 from views.deck_menu_view import DeckMenuView
@@ -13,6 +13,10 @@ class FlashcardsApp:
         self.root.title("Интервальное повторение")
         self.root.geometry("600x500")
         self.root.minsize(500, 400)
+
+        # Настройка стилей
+        self.setup_styles()
+
         # Создаем объект DatabaseManager
         self.db = DatabaseManager()
 
@@ -86,8 +90,15 @@ class FlashcardsApp:
             on_finish=self.show_deck_menu
         )
 
+    def setup_styles(self):
+        """Настройка глобальных стилей приложения"""
+        style = ttk.Style()
+        style.configure("TButton", font=("Helvetica", 11))
+        style.configure("TLabelframe.Label", font=("Helvetica", 10, "bold"))
+        style.configure("TLabel", font=("Helvetica", 10))
+
 
 if __name__ == "__main__":
-    root = tk.Tk()
+    root = ttk.Window(themename="litera")
     app = FlashcardsApp(root)
     root.mainloop()

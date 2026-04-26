@@ -1,5 +1,7 @@
 import tkinter as tk
-from tkinter import ttk, messagebox, simpledialog
+import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
+from tkinter import messagebox, simpledialog
 
 
 class DeckListView:
@@ -54,19 +56,23 @@ class DeckListView:
 
         ttk.Button(btn_frame,
                    text="Создать колоду",
-                   command=self.create_deck_dialog
+                   bootstyle=SUCCESS+OUTLINE,
+                   command=self.create_deck_dialog,
                    ).grid(row=0, column=0, padx=2, pady=2, sticky="ew")
         ttk.Button(btn_frame,
                    text="Выбрать колоду",
+                   bootstyle=PRIMARY + OUTLINE,
                    command=self.select_deck
                    ).grid(row=0, column=1, padx=2, pady=2, sticky="ew")
 
         ttk.Button(btn_frame,
                    text="Удалить колоду",
+                   bootstyle=DANGER+OUTLINE,
                    command=self.delete_deck
                    ).grid(row=1, column=0, padx=2, pady=2, sticky="ew")
         ttk.Button(btn_frame,
                    text="Выход",
+                   bootstyle=DARK+OUTLINE,
                    command=self.on_exit
                    ).grid(row=1, column=1, padx=2, pady=2, sticky="ew")
 

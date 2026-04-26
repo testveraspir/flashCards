@@ -1,5 +1,6 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
 
 
 class DeckMenuView:
@@ -38,21 +39,23 @@ class DeckMenuView:
                   font=("Helvetica", 14, "bold")).pack(
             side=tk.LEFT)
         ttk.Button(header_frame,
-                   text="< Назад",
-                   command=self.on_back
+                   text="Назад",
+                   command=self.on_back,
                    ).pack(side=tk.RIGHT)
 
         # Центральные кнопки действий
         actions_frame = ttk.Frame(self.parent)
-        actions_frame.pack(pady=40)
+        actions_frame.pack(expand=True)
 
         ttk.Button(actions_frame,
                    text="Добавить карточку",
                    width=20,
-                   command=self.on_add_card
-                   ).pack(pady=5)
+                   command=self.on_add_card,
+                   bootstyle=SUCCESS+OUTLINE
+                   ).pack(pady=15)
         ttk.Button(actions_frame,
                    text="Начать повторение",
                    width=20,
-                   command=self.on_start_review
-                   ).pack(pady=5)
+                   command=self.on_start_review,
+                   bootstyle=PRIMARY+OUTLINE
+                   ).pack(pady=8)
