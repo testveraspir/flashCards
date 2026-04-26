@@ -169,6 +169,25 @@ class FlashcardsApp:
         self.a_text = scrolledtext.ScrolledText(dialog, width=50, height=8)
         self.a_text.pack(padx=10, pady=5, fill=tk.BOTH, expand=True)
 
+        # Кнопка сохранения
+        def save_card():
+            q = self.q_text.get("1.0", tk.END).strip()
+            a = self.a_text.get("1.0", tk.END).strip()
+            if not q or not a:
+                messagebox.showerror("Ошибка",
+                                     "Заполните оба поля: вопрос и ответ")
+                return
+
+            # Импорт get_today_str из utils
+            from utils import get_today_str
+            next_date = get_today_str()
+
+            self.db.add_card(self.current_deck_id, q, a, next_date)
+            messagebox.showinfo("Успех", "Карточка добавлена")
+            dialog.destroy()
+
+        ttk.Button(dialog, text="Сохранить", command=save_card).pack(pady=10)
+
     def start_review_session(self):
         """Временная заглушка для начала повторения"""
         messagebox.showinfo("В разработке", "Режим повторения будет здесь")
