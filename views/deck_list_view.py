@@ -57,13 +57,13 @@ class DeckListView:
                    command=self.create_deck_dialog
                    ).grid(row=0, column=0, padx=2, pady=2, sticky="ew")
         ttk.Button(btn_frame,
-                   text="Удалить колоду",
-                   command=self.delete_deck
+                   text="Выбрать колоду",
+                   command=self.select_deck
                    ).grid(row=0, column=1, padx=2, pady=2, sticky="ew")
 
         ttk.Button(btn_frame,
-                   text="Выбрать колоду",
-                   command=self.select_deck
+                   text="Удалить колоду",
+                   command=self.delete_deck
                    ).grid(row=1, column=0, padx=2, pady=2, sticky="ew")
         ttk.Button(btn_frame,
                    text="Выход",
