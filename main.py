@@ -165,38 +165,8 @@ class FlashcardsApp:
                    ).pack(pady=5)
 
     def add_card_dialog(self):
-        dialog = tk.Toplevel(self.root)
-        dialog.title("Новая карточка")
-        dialog.geometry("500x400")
-
-        # Метка и поле для Вопроса
-        ttk.Label(dialog, text="Вопрос:").pack(anchor="w", padx=10, pady=(10, 0))
-        self.q_text = scrolledtext.ScrolledText(dialog, width=50, height=8)
-        self.q_text.pack(padx=10, pady=5, fill=tk.BOTH, expand=True)
-
-        # Метка и поле для Ответа
-        ttk.Label(dialog, text="Ответ:").pack(anchor="w", padx=10)
-        self.a_text = scrolledtext.ScrolledText(dialog, width=50, height=8)
-        self.a_text.pack(padx=10, pady=5, fill=tk.BOTH, expand=True)
-
-        # Кнопка сохранения
-        def save_card():
-            q = self.q_text.get("1.0", tk.END).strip()
-            a = self.a_text.get("1.0", tk.END).strip()
-            if not q or not a:
-                messagebox.showerror("Ошибка",
-                                     "Заполните оба поля: вопрос и ответ")
-                return
-
-            # Импорт get_today_str из utils
-            from utils import get_today_str
-            next_date = get_today_str()
-
-            self.db.add_card(self.current_deck_id, q, a, next_date)
-            messagebox.showinfo("Успех", "Карточка добавлена")
-            dialog.destroy()
-
-        ttk.Button(dialog, text="Сохранить", command=save_card).pack(pady=10)
+        from dialogs.add_card_dialog import show_add_card_dialog
+        show_add_card_dialog(self.root, self.db, self.current_deck_id)
 
     def start_review_session(self):
         """Начинает сессию повторения"""
