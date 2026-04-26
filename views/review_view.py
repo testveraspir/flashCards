@@ -1,7 +1,7 @@
 import tkinter as tk
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
-from tkinter import messagebox
+from tkinter import messagebox, scrolledtext
 
 
 class ReviewView:
@@ -86,11 +86,13 @@ class ReviewView:
                   text="Ответ:",
                   font=("Helvetica", 10, "bold")
                   ).pack(anchor="w")
-        self.answer_label = ttk.Label(self.answer_container,
-                                      text="",
-                                      wraplength=500,
-                                      font=("Helvetica", 12))
-        self.answer_label.pack(anchor="w", pady=5)
+        self.answer_label = scrolledtext.ScrolledText(self.answer_container,
+                                                      wrap=tk.WORD,
+                                                      font=("Helvetica", 12),
+                                                      height=8,
+                                                      relief=tk.FLAT)
+        self.answer_label.pack(fill=tk.BOTH, expand=True, pady=5)
+        self.answer_label.config(state=tk.DISABLED)  # только для чтения
 
         ttk.Separator(self.answer_container,
                       orient='horizontal'
@@ -152,7 +154,10 @@ class ReviewView:
 
         # Обновляем виджеты
         self.question_label.config(text=question_text)
-        self.answer_label.config(text=answer_text)
+        self.answer_label.config(state=tk.NORMAL)
+        self.answer_label.delete("1.0", tk.END)
+        self.answer_label.insert("1.0", answer_text)
+        self.answer_label.config(state=tk.DISABLED)
         self.progress_label.config(text=f"Осталось: {len(self.cards_queue)}")
 
         # Загружаем и отображаем историю повторений
