@@ -16,6 +16,7 @@ class FlashcardsApp:
         self.current_deck_id = None
         self.deck_listbox = None
         self.deck_ids = []
+        self.current_deck_name = None
 
         # Основной контейнер
         self.main_container = ttk.Frame(root, padding="10")
@@ -72,6 +73,14 @@ class FlashcardsApp:
                    command=self.create_deck_dialog
                    ).pack(fill=tk.X, pady=2)
         ttk.Button(btn_frame,
+                   text="Выбрать колоду",
+                   command=self.select_deck
+                   ).pack(fill=tk.X, pady=2)
+        ttk.Button(btn_frame,
+                   text="Удалить колоду",
+                   command=self.delete_deck
+                   ).pack(fill=tk.X, pady=2)
+        ttk.Button(btn_frame,
                    text="Выход",
                    command=self.on_closing
                    ).pack(fill=tk.X, pady=2)
@@ -86,6 +95,34 @@ class FlashcardsApp:
             self.deck_listbox.insert(tk.END, name)
         # Сохраним id колод, чтобы потом по имени найти id
         self.deck_ids = [deck_id for deck_id, name in decks]
+
+    def delete_deck(self):
+        """Удаляет выбранную колоду"""
+        selection = self.deck_listbox.curselection()
+        if not selection:
+            messagebox.showwarning("Внимание", "Выберите колоду для удаления")
+            return
+        index = selection[0]
+        deck_id = self.deck_ids[index]
+        deck_name = self.deck_listbox.get(index)
+        if messagebox.askyesno("Подтверждение",
+                               f'Удалить колоду "{deck_name}"?\nВсе карточки будут потеряны.'):
+            self.db.delete_deck(deck_id)
+            self.refresh_deck_list()
+            messagebox.showinfo("Успех", "Колода удалена")
+
+    def select_deck(self):
+        """Выбирает колоду для работы и переходит в меню колоды"""
+        selection = self.deck_listbox.curselection()
+        if not selection:
+            messagebox.showwarning("Внимание", "Выберите колоду из списка")
+            return
+        index = selection[0]
+        self.current_deck_id = self.deck_ids[index]
+        self.current_deck_name = self.deck_listbox.get(index)
+        # Пока только выводим сообщение, позже сделаем реальный переход
+        messagebox.showinfo("Инфо", f'Выбрана колода "{self.current_deck_name}"')
+        # В следующем шаге здесь откроем меню колоды
 
     def create_deck_dialog(self):
         """Открывает диалог создания новой колоды"""
