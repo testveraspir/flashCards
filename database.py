@@ -7,6 +7,7 @@ from utils import DB_NAME, get_today_str
 class DatabaseManager:
     def __init__(self):
         self.conn = sqlite3.connect(DB_NAME)
+        self.conn.execute("PRAGMA foreign_keys = ON")
         self.create_tables()
 
     def create_tables(self):
