@@ -160,16 +160,6 @@ class ReviewView:
         self.answer_label.config(state=tk.DISABLED)
         self.progress_label.config(text=f"Осталось: {len(self.cards_queue)}")
 
-        # Загружаем и отображаем историю повторений
-        history = self.db.get_card_history(self.current_card_id)
-        if history:
-            from utils import format_relative_date
-            history_lines = [format_relative_date(d) for d in history]
-            history_text = "Последние повторения:\n" + "\n".join(history_lines)
-            self.history_label.config(text=history_text)
-        else:
-            self.history_label.config(text="История повторений:\n(Нет данных)")
-
         # Сбрасываем состояние: скрываем контейнер с ответом, активируем кнопку переворота
         self.answer_container.pack_forget()
         self.btn_flip.pack()
