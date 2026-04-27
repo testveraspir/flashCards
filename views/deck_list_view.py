@@ -97,6 +97,12 @@ class DeckListView:
                 messagebox.showinfo("Успех",
                                     "Колода создана")
                 self.refresh_deck_list()
+                # Находим новую колоду по имени и выбираем её
+                decks = self.db.get_decks()
+                for deck_id, deck_name in decks:
+                    if deck_name == name:
+                        self.on_deck_selected(deck_id, deck_name)  # автоматически выбираем
+                        break
             else:
                 messagebox.showerror("Ошибка",
                                      "Колода с таким названием уже существует")
