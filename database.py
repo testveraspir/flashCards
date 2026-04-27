@@ -80,21 +80,6 @@ class DatabaseManager:
                        (deck_id, today))
         return cursor.fetchall()
 
-    def get_card_history(self, card_id):
-        """
-        Возвращает последние 4 даты повторения для карточки
-        :param card_id:
-        :return:
-        """
-
-        cursor = self.conn.cursor()
-        cursor.execute("""
-            SELECT review_date FROM review_history
-            WHERE card_id = ?
-            ORDER BY review_date DESC LIMIT 4
-        """, (card_id,))
-        return [row[0] for row in cursor.fetchall()]
-
     def update_review(self, card_id, interval_days):
         cursor = self.conn.cursor()
         today = datetime.date.today()
