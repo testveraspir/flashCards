@@ -23,3 +23,8 @@ ENV/
 # Логи и временные файлы
 *.log
 *.tmp
+
+# Сборка exe
+dist/
+build/
+*.spec
