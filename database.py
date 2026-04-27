@@ -80,26 +80,6 @@ class DatabaseManager:
                        (deck_id, today))
         return cursor.fetchall()
 
-    def update_review(self, card_id, interval_days):
-        cursor = self.conn.cursor()
-        today = datetime.date.today()
-        # Вычисляем дату следующего повторения
-        if interval_days == 0:
-            next_date = today
-        else:
-            next_date = today + datetime.timedelta(days=interval_days)
-
-        next_date_str = next_date.isoformat()
-        today_str = today.isoformat()
-        # Обновляем карточку
-        cursor.execute("""
-            UPDATE cards 
-            SET next_review_date = ?, last_review_date = ?
-            WHERE id = ?
-        """, (next_date_str, today_str, card_id)
-        )
-        self.conn.commit()
-
     def get_all_cards_count(self, deck_id):
         """Возвращает общее количество карточек в колоде"""
         cursor = self.conn.cursor()

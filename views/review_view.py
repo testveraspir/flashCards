@@ -90,22 +90,10 @@ class ReviewView:
                       orient='horizontal'
                       ).pack(fill='x', pady=15)
 
-        # Кнопки выбора интервала
-        btn_grid = ttk.Frame(self.answer_container)
-        btn_grid.pack()
-
-        ttk.Button(btn_grid, text="Сегодня", bootstyle=PRIMARY+OUTLINE,
-                   command=lambda: self.rate_card(0)
-                   ).grid(row=0, column=0, padx=5, pady=5, sticky="ew")
-        ttk.Button(btn_grid, text="Через 1 день", bootstyle=PRIMARY+OUTLINE,
-                   command=lambda: self.rate_card(1)
-                   ).grid(row=0, column=1, padx=5, pady=5, sticky="ew")
-        ttk.Button(btn_grid, text="Через 3 дня", bootstyle=PRIMARY+OUTLINE,
-                   command=lambda: self.rate_card(3)
-                   ).grid(row=1, column=0, padx=5, pady=5, sticky="ew")
-        ttk.Button(btn_grid, text="Через 7 дней", bootstyle=PRIMARY+OUTLINE,
-                   command=lambda: self.rate_card(7)
-                   ).grid(row=1, column=1, padx=5, pady=5, sticky="ew")
+        ttk.Button(self.answer_container, text="Готово",
+                   bootstyle=PRIMARY+OUTLINE,
+                   command=lambda: self.rate_card()
+                   ).pack(pady=10)
 
         # Прогресс
         self.progress_label = ttk.Label(self.parent, text="")
@@ -163,10 +151,10 @@ class ReviewView:
         # показываем контейнер с ответом и кнопками
         self.answer_container.pack(fill=tk.BOTH, expand=True, pady=10)
 
-    def rate_card(self, interval):
+    def rate_card(self):
         """Обрабатывает выбор интервала повторения"""
         # Сохраняем результат повторения в БД
-        self.db.update_review(self.current_card_id, interval)
+        self.db.update_review_auto(self.current_card_id)
 
         # Удаляем текущую карточку из очереди
         self.cards_queue.pop(0)
