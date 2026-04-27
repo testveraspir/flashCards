@@ -1,4 +1,6 @@
 import tkinter as tk
+from tkinter import messagebox
+
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 import datetime
@@ -59,8 +61,8 @@ class DeckMenuView:
                                  height=15)
         self.tree.heading("question", text="Вопрос")
         self.tree.heading("next_review", text="Дата повтора")
-        self.tree.column("question", width=30, anchor="w")
-        self.tree.column("next_review", width=120, anchor="center")
+        self.tree.column("question", width=350, anchor="w", minwidth=200)
+        self.tree.column("next_review", width=120, anchor="center", minwidth=100)
 
         # Скроллбар
         scrollbar = ttk.Scrollbar(list_frame, orient="vertical", command=self.tree.yview)
@@ -87,6 +89,11 @@ class DeckMenuView:
                    command=self.on_start_review,
                    bootstyle=PRIMARY+OUTLINE
                    ).pack(side=tk.LEFT, padx=5)
+        ttk.Button(actions_frame,
+                   text="В повтор (для выбранной)",
+                   command=self.add_selected_to_review,
+                   bootstyle=WARNING+OUTLINE
+                   ).pack(side=tk.LEFT, padx=5)
 
     def get_card_status(self, next_review_date):
         """Возвращает дату следующего повторения в формате ДД.ММ.ГГ"""
@@ -111,6 +118,28 @@ class DeckMenuView:
         for i, card in enumerate(cards):
             card_id, question, next_review_date = card
             status = self.get_card_status(next_review_date)
-            self.tree.insert("", tk.END,
-                             values=(question, status),
-                             tags=(card_id,))
+            # Вставляем строку
+            self.tree.insert("", tk.END, values=(question, status),
+                             iid=str(card_id))
+
+
+    def add_selected_to_review(self):
+        """Добавляет выбранную карточку в повтор"""
+        selected = self.tree.selection()
+        if not selected:
+            messagebox.showwarning("Внимание", "Выберите карточку")
+            return
+
+        card_id = int(selected[0])
+
+        # Проверяем, выучена ли карточка
+        cards = self.db.get_all_cards(self.deck_id)
+        for card in cards:
+            if card[0] == card_id and card[2] >= "2999-01-01":
+                self.db.reset_card(card_id)
+                self.refresh_card_list()
+                messagebox.showinfo("Успех", "Карточка добавлена в повтор")
+                return
+
+        messagebox.showinfo("Инфо",
+                            "Можно добавлять в повтор только выученные карточки")

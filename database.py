@@ -155,5 +155,16 @@ class DatabaseManager:
         """, (deck_id,))
         return cursor.fetchall()
 
+    def reset_card(self, card_id):
+        """Перезапускает карточку: статус становится 'сегодня'"""
+        cursor = self.conn.cursor()
+        today = datetime.date.today().isoformat()
+        cursor.execute("""
+            UPDATE cards 
+            SET next_review_date = ?, last_review_date = ?
+            WHERE id = ?
+        """, (today, today, card_id))
+        self.conn.commit()
+
     def close(self):
         self.conn.close()
