@@ -26,7 +26,6 @@ class ReviewView:
 
         # Виджеты
         self.card_frame = None
-        self.history_label = None
         self.question_label = None
         self.btn_flip = None
         self.answer_container = None
@@ -54,13 +53,6 @@ class ReviewView:
                                     padding=20)
         self.card_frame.pack(fill=tk.BOTH,
                              expand=True, padx=20, pady=10)
-
-        # История повторений
-        self.history_label = ttk.Label(self.card_frame,
-                                       text="",
-                                       foreground="gray",
-                                       font=("Helvetica", 9))
-        self.history_label.pack(anchor="w", pady=(0, 10))
 
         # Вопрос
         ttk.Label(self.card_frame, text="Вопрос:",
