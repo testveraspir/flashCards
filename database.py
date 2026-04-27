@@ -27,20 +27,13 @@ class DatabaseManager:
                 question TEXT NOT NULL,
                 answer TEXT NOT NULL,
                 next_review_date TEXT,
+                last_review_date TEXT,
+                added_date TEXT,
                 FOREIGN KEY(deck_id) REFERENCES decks(id)
                     ON DELETE CASCADE
             )
         ''')
-        # Таблица истории повторений
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS review_history (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                card_id INTEGER,
-                review_date TEXT,
-                FOREIGN KEY(card_id) REFERENCES cards(id)
-                    ON DELETE CASCADE
-                )
-        ''')
+
         self.conn.commit()
 
     def add_deck(self, name):
