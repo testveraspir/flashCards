@@ -4,12 +4,14 @@ from ttkbootstrap.constants import *
 from tkinter import messagebox, scrolledtext
 
 
-def show_add_card_dialog(parent, db, deck_id):
+def show_add_card_dialog(parent, db, deck_id, on_success=None):
     """
     Показывает диалог добавления карточки.
     :param parent: Родительское окно (Tk или Toplevel)
     :param db: объект DatabaseManager
     :param deck_id: ID колоды, в которую добавляем карточку
+    :param on_success: функция, которая вызывается после
+     успешного добавления
     :return:
     """
     dialog = tk.Toplevel(parent)
@@ -69,8 +71,12 @@ def show_add_card_dialog(parent, db, deck_id):
         next_date = get_today_str()
 
         db.add_card(deck_id, q, a, next_date)
+        db.conn.commit()
         messagebox.showinfo("Успех", "Карточка добавлена")
         dialog.destroy()
+
+        if on_success:
+            on_success()
 
     ttk.Button(dialog,
                text="Сохранить",

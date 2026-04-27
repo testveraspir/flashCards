@@ -146,6 +146,7 @@ class DatabaseManager:
 
     def get_all_cards(self, deck_id):
         """Возвращает все карточки колоды (id, вопрос, next_review_date)"""
+        print(f"=== get_all_cards: deck_id={deck_id} ===")
         cursor = self.conn.cursor()
         cursor.execute("""
             SELECT id, question, next_review_date 

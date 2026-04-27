@@ -21,7 +21,7 @@ class DeckMenuView:
          диалога добавления карточки
         :param on_start_review: callback для начала повторения
         """
-
+        print(f"=== DeckMenuView.__init__: deck_id={deck_id} ===")
         self.parent = parent
         self.deck_id = deck_id
         self.deck_name = deck_name
@@ -110,18 +110,20 @@ class DeckMenuView:
 
     def refresh_card_list(self):
         """Обновляет список карточек из базы данных"""
+        print(f"=== refresh_card_list: deck_id={self.deck_id} ===")
         for item in self.tree.get_children():
             self.tree.delete(item)
 
         cards = self.db.get_all_cards(self.deck_id)
+        print(f"Найдено карточек: {len(cards)}")
 
         for i, card in enumerate(cards):
+            print(f"  Карточка: id={card[0]}, вопрос={card[1]}, next_date={card[2]}")
             card_id, question, next_review_date = card
             status = self.get_card_status(next_review_date)
             # Вставляем строку
             self.tree.insert("", tk.END, values=(question, status),
                              iid=str(card_id))
-
 
     def add_selected_to_review(self):
         """Добавляет выбранную карточку в повтор"""

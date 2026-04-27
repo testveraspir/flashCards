@@ -59,12 +59,14 @@ class FlashcardsApp:
 
     def on_deck_selected(self, deck_id, deck_name):
         """Обработчик выбора колоды из списка"""
+        print(f"=== on_deck_selected: deck_id={deck_id}, deck_name={deck_name} ===")
         self.current_deck_id = deck_id
         self.current_deck_name = deck_name
         self.show_deck_menu()
 
     def show_deck_menu(self):
         """Отображает экран меню колоды"""
+        print(f"=== show_deck_menu: current_deck_id={self.current_deck_id} ===")
         self.clear_frame()
         self.deck_menu_view = DeckMenuView(
             self.main_container,
@@ -78,7 +80,8 @@ class FlashcardsApp:
 
     def add_card_dialog(self):
         from dialogs.add_card_dialog import show_add_card_dialog
-        show_add_card_dialog(self.root, self.db, self.current_deck_id)
+        show_add_card_dialog(self.root, self.db, self.current_deck_id,
+                             on_success=self.refresh_current_view)
 
     def start_review_session(self):
         """Начинает сессию повторения"""
@@ -89,6 +92,11 @@ class FlashcardsApp:
             self.current_deck_id,
             on_finish=self.show_deck_menu
         )
+
+    def refresh_current_view(self):
+        """Обновляет текущий экран (список карточек)"""
+        if hasattr(self, 'deck_menu_view'):
+            self.deck_menu_view.refresh_card_list()
 
     def setup_styles(self):
         """Настройка глобальных стилей приложения"""
