@@ -1,10 +1,11 @@
 import tkinter as tk
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
+import datetime
 
 
 class DeckMenuView:
-    """Экран меню выбранной колоды"""
+    """Экран со списком всех карточек колоды и их статусами"""
 
     def __init__(self, parent, deck_id, deck_name,
                  db, on_back, on_add_card, on_start_review):
@@ -26,8 +27,10 @@ class DeckMenuView:
         self.on_back = on_back
         self.on_add_card = on_add_card
         self.on_start_review = on_start_review
+        self.tree = None
 
         self.create_widgets()
+        self.refresh_card_list()
 
     def create_widgets(self):
         """Отображает меню выбранной колоды"""
@@ -44,19 +47,70 @@ class DeckMenuView:
                    command=self.on_back,
                    ).pack(side=tk.RIGHT)
 
-        # Центральные кнопки действий
+        # Рамка для списка карточек
+        list_frame = ttk.Frame(self.parent)
+        list_frame.pack(fill=tk.BOTH, expand=True, pady=10)
+
+        # Таблица с колонками
+        columns = ("question", "next_review")
+        self.tree = ttk.Treeview(list_frame,
+                                 columns=columns,
+                                 show="headings",
+                                 height=15)
+        self.tree.heading("question", text="Вопрос")
+        self.tree.heading("next_review", text="Дата повтора")
+        self.tree.column("question", width=30, anchor="w")
+        self.tree.column("next_review", width=120, anchor="center")
+
+        # Скроллбар
+        scrollbar = ttk.Scrollbar(list_frame, orient="vertical", command=self.tree.yview)
+        self.tree.configure(yscrollcommand=scrollbar.set)
+
+        self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # Кнопки внизу
         actions_frame = ttk.Frame(self.parent)
-        actions_frame.pack(expand=True)
+        actions_frame.pack(pady=10, fill=tk.X)
+        actions_frame.columnconfigure(0, weight=1)
+        actions_frame.columnconfigure(1, weight=1)
 
         ttk.Button(actions_frame,
                    text="Добавить карточку",
                    width=20,
                    command=self.on_add_card,
                    bootstyle=SUCCESS+OUTLINE
-                   ).pack(pady=15)
+                   ).pack(side=tk.LEFT, padx=5)
         ttk.Button(actions_frame,
                    text="Начать повторение",
                    width=20,
                    command=self.on_start_review,
                    bootstyle=PRIMARY+OUTLINE
-                   ).pack(pady=8)
+                   ).pack(side=tk.LEFT, padx=5)
+
+    def get_card_status(self, next_review_date):
+        """Возвращает дату следующего повторения в формате ДД.ММ.ГГ"""
+        if not next_review_date:
+            return "сегодня"
+
+        # Если карточка выучена
+        if next_review_date >= "2999-01-01":
+            return "выучена"
+
+        # Преобразуем дату в формат ДД.ММ.ГГ
+        date_obj = datetime.datetime.strptime(next_review_date, "%Y-%m-%d").date()
+        return date_obj.strftime("%d.%m.%y")
+
+    def refresh_card_list(self):
+        """Обновляет список карточек из базы данных"""
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+
+        cards = self.db.get_all_cards(self.deck_id)
+
+        for i, card in enumerate(cards):
+            card_id, question, next_review_date = card
+            status = self.get_card_status(next_review_date)
+            self.tree.insert("", tk.END,
+                             values=(question, status),
+                             tags=(card_id,))

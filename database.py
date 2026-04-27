@@ -144,5 +144,16 @@ class DatabaseManager:
         self.conn.commit()
         return new_interval is not None  # True если не выучена
 
+    def get_all_cards(self, deck_id):
+        """Возвращает все карточки колоды (id, вопрос, next_review_date)"""
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            SELECT id, question, next_review_date 
+            FROM cards 
+            WHERE deck_id = ?
+            ORDER BY added_date DESC
+        """, (deck_id,))
+        return cursor.fetchall()
+
     def close(self):
         self.conn.close()
