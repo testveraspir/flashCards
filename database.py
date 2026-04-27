@@ -106,5 +106,63 @@ class DatabaseManager:
         cursor.execute("SELECT COUNT(*) FROM cards WHERE deck_id = ?", (deck_id,))
         return cursor.fetchone()[0]
 
+    def get_current_interval(self, card_id):
+        """Возвращает текущий интервал карточки в днях"""
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            SELECT last_review_date, next_review_date 
+            FROM cards WHERE id = ?
+        """, (card_id,))
+        row = cursor.fetchone()
+
+        if not row or not row[0] or not row[1]:
+            return 0  # новая карточка
+
+        # Если дата слишком далёкая — считаем карточку выученной
+        next_date_str = row[1]
+        if next_date_str >= "2999-01-01":
+            return 7  # последний интервал, дальше не увеличиваем
+
+        last_date = datetime.datetime.strptime(row[0], "%Y-%m-%d").date()
+        next_date = datetime.datetime.strptime(row[1], "%Y-%m-%d").date()
+
+        return (next_date - last_date).days
+
+    def update_review_auto(self, card_id):
+        """Автоматически обновляет интервал: 0→1→3→7→выучена"""
+        cursor = self.conn.cursor()
+        today = datetime.date.today()
+        today_str = today.isoformat()
+
+        # Получаем текущий интервал
+        current_interval = self.get_current_interval(card_id)
+
+        # Определяем следующий интервал
+        if current_interval == 0:
+            new_interval = 1
+        elif current_interval == 1:
+            new_interval = 3
+        elif current_interval == 3:
+            new_interval = 7
+        else:
+            new_interval = None  # выучена
+
+        if new_interval:
+            next_date = today + datetime.timedelta(days=new_interval)
+            next_date_str = next_date.isoformat()
+        else:
+            # Выучена - ставим дату далеко в будущее
+            next_date_str = "2999-12-31"
+
+        # Обновляем карточку
+        cursor.execute("""
+            UPDATE cards 
+            SET next_review_date = ?, last_review_date = ? 
+            WHERE id = ?
+        """, (next_date_str, today_str, card_id))
+
+        self.conn.commit()
+        return new_interval is not None  # True если не выучена
+
     def close(self):
         self.conn.close()
