@@ -1,6 +1,5 @@
 import sqlite3
 import datetime
-
 from utils import DB_NAME, get_today_str
 
 
@@ -56,10 +55,13 @@ class DatabaseManager:
         self.conn.commit()
 
     def add_card(self, deck_id, question, answer, next_date):
+        today = get_today_str()
         cursor = self.conn.cursor()
         cursor.execute("""
-            INSERT INTO cards (deck_id, question, answer, next_review_date)
-            VALUES (?, ?, ?, ?)""", (deck_id, question, answer, next_date))
+            INSERT INTO cards (deck_id, question, answer,
+             next_review_date, last_review_date, added_date)
+            VALUES (?, ?, ?, ?, ?, ?)""", (deck_id, question, answer,
+                                           next_date, today, today))
         self.conn.commit()
 
     def get_due_cards(self, deck_id):
